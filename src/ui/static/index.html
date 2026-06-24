@@ -275,6 +275,12 @@
     </main>
 
     <script>
+        // --- DEPLOYMENT CONFIGURATION ---
+        // For local development or when served by FastAPI, leave this empty ('').
+        // When deploying the frontend separately to Vercel, change this to your Railway Backend URL!
+        // Example: const API_BASE_URL = 'https://craveai-backend.up.railway.app';
+        const API_BASE_URL = '';
+        
         // Budget Slider Control
         const budgetSlider = document.getElementById('budget-slider');
         const budgetDisplay = document.getElementById('budget-display');
@@ -333,7 +339,7 @@
             document.getElementById('form-error').classList.add('hidden-state');
             
             try {
-                const response = await fetch('/recommendations', {
+                const response = await fetch(API_BASE_URL + '/recommendations', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
