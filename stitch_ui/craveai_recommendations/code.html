@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CraveAI - Recommendations</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#6a1c9b",
+                        "surface-container-lowest": "#0e0e0f",
+                        "primary-container": "#ff5637",
+                        "surface-container-low": "#1c1b1c",
+                        "outline-variant": "#5c403a",
+                        "inverse-on-surface": "#313031",
+                        "inverse-primary": "#ba1c00",
+                        "surface-container-highest": "#353436",
+                        "surface-variant": "#353436",
+                        "surface-container": "#201f20",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#74f5ff",
+                        "surface-tint": "#ffb4a5",
+                        "tertiary-fixed-dim": "#00dbe7",
+                        "on-surface": "#e5e2e3",
+                        "primary-fixed": "#ffdad3",
+                        "on-surface-variant": "#e5bdb6",
+                        "on-background": "#e5e2e3",
+                        "on-tertiary-fixed": "#002022",
+                        "secondary-container": "#6a1c9b",
+                        "on-tertiary-fixed-variant": "#004f54",
+                        "error-container": "#93000a",
+                        "secondary": "#e3b5ff",
+                        "surface-bright": "#3a393a",
+                        "tertiary": "#00dbe7",
+                        "on-secondary-container": "#d99dff",
+                        "on-primary-container": "#590800",
+                        "primary-fixed-dim": "#ffb4a5",
+                        "on-tertiary": "#00363a",
+                        "on-primary-fixed": "#3e0400",
+                        "background": "#131314",
+                        "secondary-fixed": "#f4daff",
+                        "on-primary": "#650b00",
+                        "tertiary-container": "#00a0a9",
+                        "outline": "#ac8881",
+                        "surface-container-high": "#2a2a2b",
+                        "primary": "#ffb4a5",
+                        "on-tertiary-container": "#002f32",
+                        "on-error": "#690005",
+                        "surface-dim": "#131314",
+                        "inverse-surface": "#e5e2e3",
+                        "on-primary-fixed-variant": "#8e1300",
+                        "surface": "#131314",
+                        "on-secondary-fixed": "#2f004c",
+                        "error": "#ffb4ab",
+                        "secondary-fixed-dim": "#e3b5ff",
+                        "on-secondary": "#4e0079"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "40px",
+                        "gutter": "16px",
+                        "element-gap": "12px",
+                        "container-margin": "20px"
+                    },
+                    "fontFamily": {
+                        "title-lg": ["Outfit"],
+                        "display-lg": ["Outfit"],
+                        "display-lg-mobile": ["Outfit"],
+                        "body-base": ["Outfit"],
+                        "headline-md": ["Outfit"],
+                        "label-sm": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Base Styles */
+        body {
+            background-color: #0A0A0B;
+            color: #e5e2e3;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Glows */
+        .ambient-glow-1 {
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(255, 86, 55, 0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .ambient-glow-2 {
+            position: fixed;
+            bottom: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(106, 28, 155, 0.1) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .glass-callout {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-left: 2px solid #ff5637;
+        }
+        
+        .ai-explanation-box {
+             background: rgba(255, 86, 55, 0.05);
+             border: 1px solid rgba(255, 86, 55, 0.2);
+             border-radius: 8px;
+        }
+
+        /* Metallic Badges */
+        .metallic-badge {
+            background: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 50%, #707070 51%, #c0c0c0 100%);
+            color: #131314;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 10px rgba(0,0,0,0.5);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+            font-weight: 800;
+        }
+        
+        .crave-choice-badge {
+            background: linear-gradient(135deg, #ffb4a5 0%, #ff5637 50%, #ba1c00 51%, #ffdad3 100%);
+            color: #3e0400;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 15px rgba(255, 86, 55, 0.4);
+            font-weight: 800;
+        }
+
+        /* Scrim for Images */
+        .image-scrim {
+            background: linear-gradient(to top, rgba(10, 10, 11, 0.9) 0%, rgba(10, 10, 11, 0.4) 50%, transparent 100%);
+        }
+
+        /* Buttons */
+        .btn-ai {
+            background: linear-gradient(135deg, #ff5637, #6a1c9b);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 20px rgba(255, 86, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-ai:hover {
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 6px 25px rgba(255, 86, 55, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Loading Overlay Animations */
+        @keyframes pulse-glow {
+            0% { opacity: 0.5; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 0.5; transform: scale(0.98); }
+        }
+
+        .animate-pulse-glow {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(to right, #ffb4a5, #e3b5ff);
+        }
+
+        /* Hide logic */
+        .hidden-state {
+            display: none !important;
+        }
+        
+        /* Shimmer effect for loading */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .shimmer-bg {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite linear;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="relative min-h-screen pb-safe">
+<!-- Ambient Glows -->
+<div class="ambient-glow-1"></div>
+<div class="ambient-glow-2"></div>
+<!-- Top Navigation (Mobile) -->
+<header class="fixed top-0 w-full z-50 bg-background/80 dark:bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] flex items-center justify-between px-gutter h-16 w-full md:hidden">
+<button class="text-primary dark:text-primary hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu</span>
+</button>
+<span class="font-display-lg-mobile text-display-lg-mobile bg-clip-text text-transparent bg-gradient-to-r from-primary-container to-secondary-container font-extrabold tracking-tight">CraveAI</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white/20">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A macro shot of a sleek, futuristic avatar icon featuring an abstract, glowing holographic pattern in deep purples and coral reds, signifying a premium user profile. The style is hyper-realistic, dark mode aesthetic, with sharp metallic edges and soft neon ambient lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtky_QTi_TkmfepM_9qoXtawBKLzjBxi7CIYU23duYQHVDY2JXmBA43xVotvXjoUeMq4JeOEydvhEhDp_SodmrIUAXQjE6Moy0WMDBcj0vncOZ2Jn7hxNcYh61FGcndHWg1uPUknrAZoSLQNTtCSHimF1CNlUznNPhUdgVSiPudEbmnl6O5TodiCJTSFiEzjryEADAqcflvC5drex0uAa_E5iikbEUGl-yvuxnppudQMkENLyO0WFl7oU4nMFMSdcx5krFYiCb02-L"/>
+</div>
+</header>
+<!-- Top Navigation (Desktop) - Modified from JSON to fit desktop cluster -->
+<header class="hidden md:flex fixed top-0 w-full z-50 bg-background/80 dark:bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] items-center justify-between px-8 h-20 max-w-[1200px] left-1/2 -translate-x-1/2">
+<div class="flex items-center gap-8">
+<span class="font-display-lg text-display-lg bg-clip-text text-transparent bg-gradient-to-r from-primary-container to-secondary-container font-extrabold tracking-tight">CraveAI</span>
+<nav class="flex items-center gap-6">
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider hover:text-primary transition-colors" href="#">Discover</a>
+<a class="text-primary dark:text-primary font-label-sm text-label-sm uppercase tracking-wider font-bold" href="#">Crave AI</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider hover:text-primary transition-colors" href="#">Saved</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/20">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A highly detailed 3D render of a premium user avatar placeholder. It shows a sleek, dark metallic silhouette head against a rich black background, subtly illuminated by a rim light that shifts from vibrant coral (#ff5637) to deep purple (#6a1c9b). The aesthetic is luxurious, modern, and slightly mysterious." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-DIusxC2q0KlRwDDfyt3A4bNV7wtmH1dOaff66c2atr6gO8fYgotZRg8NzeBC7UGw_0ucquh04Eiejrw7sPO3Y4hSwdSyiN_3EqiQm0DpGVlC-RcIZVZ1O_SFaqiTS6PI39wOsK8eR654Jvqo3bBTGGBLPc-zGrkN1sEOCZH4KNrUdS46qmTWNDoOpUfvXtGAV0VC_NmyijqfQjnesFhUw7KlBdm-gk_buVewsn7myqLJlFZggFkJt9kC34OXdXD9NPMuUo4QEJKa"/>
+</div>
+</div>
+</header>
+<!-- Main Content Container -->
+<main class="pt-24 pb-32 md:pt-32 px-container-margin max-w-[1200px] mx-auto min-h-screen flex flex-col gap-section-gap">
+<!-- ==================== STATE 1: LOADING OVERLAY ==================== -->
+<!-- Toggle 'hidden-state' class via JS to hide/show -->
+<div class="fixed inset-0 z-[60] bg-background/90 backdrop-blur-3xl flex flex-col items-center justify-center hidden-state" id="loadingState">
+<div class="relative w-48 h-48 mb-8">
+<!-- Outer glowing ring -->
+<div class="absolute inset-0 rounded-full border-4 border-t-primary-container border-r-secondary-container border-b-primary-container/20 border-l-secondary-container/20 animate-spin" style="animation-duration: 3s;"></div>
+<!-- Inner pulsing core -->
+<div class="absolute inset-4 rounded-full bg-gradient-to-br from-primary-container/30 to-secondary-container/30 animate-pulse-glow flex items-center justify-center backdrop-blur-md">
+<span class="material-symbols-outlined text-6xl text-primary-container" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4 text-center px-4 max-w-md gradient-text animate-pulse-glow">
+                Our AI is analyzing thousands of restaurants...
+            </h2>
+<div class="w-64 h-2 bg-surface-container-high rounded-full overflow-hidden mt-6 relative">
+<div class="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-primary-container to-secondary-container rounded-full" style="animation: slide 2s infinite ease-in-out;"></div>
+</div>
+<style>
+                @keyframes slide {
+                    0% { left: -33%; }
+                    50% { left: 100%; }
+                    100% { left: -33%; }
+                }
+            </style>
+<!-- Shimmer placeholders behind overlay to suggest incoming content -->
+<div class="absolute inset-x-0 bottom-0 top-1/2 p-4 grid grid-cols-1 md:grid-cols-2 gap-4 opacity-20 pointer-events-none overflow-hidden">
+<div class="glass-card rounded-2xl h-64 shimmer-bg"></div>
+<div class="glass-card rounded-2xl h-64 shimmer-bg"></div>
+</div>
+</div>
+<!-- ==================== STATE 2: RESULTS VIEW ==================== -->
+<div class="flex flex-col gap-section-gap fade-in" id="resultsState">
+<!-- Header & Summary Section -->
+<section class="flex flex-col gap-6">
+<div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">Your Crave List</h1>
+<p class="font-body-base text-body-base text-on-surface-variant">Curated for your specific tastes right now.</p>
+</div>
+<!-- AI Summary Callout -->
+<div class="glass-callout p-6 rounded-xl relative overflow-hidden">
+<!-- Subtle bg decoration inside callout -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl"></div>
+<div class="flex gap-4 items-start relative z-10">
+<div class="mt-1 flex-shrink-0">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-surface leading-relaxed">
+                                I've analyzed your preference for <strong class="text-primary font-semibold">upscale Italian</strong> with an intimate atmosphere. I prioritized spots known for handmade pasta and excellent wine pairings within a 15-minute drive.
+                            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Results Grid (Bento/Staggered Style on Desktop) -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-element-gap md:gap-8">
+<!-- Card 1: Top Choice (Spans more columns on desktop) -->
+<article class="glass-card rounded-3xl overflow-hidden relative group md:col-span-8 flex flex-col h-full min-h-[500px]">
+<!-- Image Area -->
+<div class="relative h-64 md:h-[55%] w-full overflow-hidden shrink-0">
+<img alt="Truffles Restaurant" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A cinematic, high-resolution photograph of a rustic yet modern Italian restaurant interior. The lighting is dim and moody, with warm, glowing Edison bulbs illuminating a plate of rich, steaming truffle pasta in the foreground. The background is a beautifully blurred dark mahogany wood texture. Shot in a premium dark mode aesthetic with rich contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1Xsm3gqoknGjOVUzvOCfafG56QleOaUzaGnEF5xFXV_9xdF79LfrIqzFb7bkwUxDBoG9SALJj_QTTBYn8S3LQpskQ17klQ3rcMw_8nCqil6cZWuBHawLJuO5rEyqNq9Kz3fSLaFiqpZKGyK--3SvnEdlQjLH9qXlRsKAosD-dSy8rxFfkJLvJyb5QFDBysnWxuF9Bd3mTcSgkrJ7I10zR2eL0PZwZtaU1wZ5HOEel9GHpFllHUs_n2iTO9uQNyIm-l_jefHXeoZr-"/>
+<div class="absolute inset-0 image-scrim"></div>
+<!-- Badges Top Left -->
+<div class="absolute top-4 left-4 flex flex-col gap-2">
+<div class="crave-choice-badge px-4 py-1.5 rounded-full font-label-sm text-label-sm uppercase tracking-widest inline-flex items-center gap-1 w-max">
+<span class="material-symbols-outlined text-[14px]">stars</span>
+                                Crave Choice #1
+                            </div>
+</div>
+<!-- Favorite Toggle Top Right -->
+<button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-6 md:p-8 flex flex-col flex-grow justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md md:text-[32px] md:leading-[40px] text-on-surface font-bold">Truffles &amp; Wine</h3>
+<div class="flex items-center gap-1 bg-surface-container/80 px-2 py-1 rounded border border-white/5">
+<span class="material-symbols-outlined text-primary-container text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm text-on-surface">4.9</span>
+</div>
+</div>
+<!-- Metadata Row -->
+<div class="flex flex-wrap items-center gap-4 font-body-base text-body-base text-on-surface-variant mb-6 text-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">restaurant</span> Italian, Pasta</span>
+<span class="text-white/20">•</span>
+<span>$$$$</span>
+<span class="text-white/20">•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> 2.1 mi</span>
+</div>
+</div>
+<!-- AI Explanation Box inside Card -->
+<div class="ai-explanation-box p-4 mt-auto">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary-container text-[20px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<p class="font-body-base text-body-base text-on-surface text-sm">
+                                    Perfect match for your "intimate lighting" request. Reviewers specifically mention their tableside truffle shaving experience as a standout.
+                                </p>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2: Runner up (Standard card) -->
+<article class="glass-card rounded-3xl overflow-hidden relative group md:col-span-4 flex flex-col h-full min-h-[500px]">
+<!-- Image Area -->
+<div class="relative h-56 md:h-[45%] w-full overflow-hidden shrink-0">
+<img alt="Nero Pizzeria" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A striking, moody photograph of a modern minimalist pizzeria at night. A wood-fired pizza with blistered crusts sits on a dark slate table. Ambient lighting from neon purple and warm orange accents reflects off the glossy tabletop, fitting a futuristic, premium dark mode restaurant discovery app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTkfKLxYbSai9IfHOmaOEtvvSnvBakUOYQKYDd-xM47XNDEYHGOEBVeVxyz4CwSs-KN0sADZ5H5UkUeHKJckR9lbiCz2WALJadCn8KBbkOXNedV-s6EXOhToeL6adYZ5njgWwRIvN3rA0jqi9nov2zl-_F-4nzqHxIIrAaPUFdsrhuneoC7rxGJaV0IdF7dM9qil3cXTT2iuq5zPCiqXAc6Ug6PEIKG7lr0bRwv-aDus-EKk-VqslhTzdQCqw0uZ1wPQGGhFhcRwVj"/>
+<div class="absolute inset-0 image-scrim"></div>
+<!-- Badges Top Left -->
+<div class="absolute top-4 left-4">
+<div class="metallic-badge px-3 py-1 rounded-full font-label-sm text-label-sm uppercase tracking-widest inline-flex items-center gap-1 shadow-lg">
+                                #2
+                            </div>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-6 flex flex-col flex-grow justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold">Nero Pizzeria</h3>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary-container text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm text-on-surface">4.6</span>
+</div>
+</div>
+<!-- Metadata Row -->
+<div class="flex flex-wrap items-center gap-3 font-body-base text-body-base text-on-surface-variant mb-4 text-sm">
+<span>Italian, Pizza</span>
+<span class="text-white/20">•</span>
+<span>$$</span>
+<span class="text-white/20">•</span>
+<span>3.5 mi</span>
+</div>
+</div>
+<!-- AI Explanation Box inside Card -->
+<div class="ai-explanation-box p-3 mt-auto">
+<p class="font-body-base text-body-base text-on-surface text-xs leading-relaxed">
+                                A slightly more casual alternative, but their organic wine list highly correlates with your past favorites.
+                            </p>
+</div>
+</div>
+</article>
+<!-- Card 3: Alternative (Standard card, spans 2 cols on mobile maybe) -->
+<article class="glass-card rounded-3xl overflow-hidden relative group md:col-span-12 flex flex-col md:flex-row h-auto md:h-64">
+<!-- Image Area -->
+<div class="relative h-48 md:h-full md:w-1/3 overflow-hidden shrink-0">
+<img alt="Mare Crudo" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="An extreme close-up, high-end culinary macro shot of a delicate seafood crudo dish on a dark, textured ceramic plate. Tiny edible flowers and drops of bright orange oil contrast sharply with the dark background. The lighting is dramatic, emphasizing texture and luxury, perfectly suited for a premium foodie interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAelORAfVrN7JqO36FGnLC_XrstAVLoSW0XboFCaJTlzJ7JYhrV5qqCacrYOb9NQvQUtGNKfy0KQvpAfGfRNV4CJfGXTWeRzET4ZqKBCjcDIrRu0-FFwypDvXkzovhO0p7Z-9HGYrI3Hl5E1G0CrGN3xw-_qgSQrHM-9tfGhAuJAjc0RpJ32FPZEAEwVQT4qwHnhIZsNv23Jl2bDyz3mxdwsLWNw-QQw4RkqQPnI1s9eI6ksZz8EI1t7pf1PyWUy3WNvytSsZqr3VSV"/>
+<div class="absolute inset-0 image-scrim md:bg-gradient-to-r md:from-transparent md:to-[#0A0A0B]/90"></div>
+<!-- Badges Top Left -->
+<div class="absolute top-4 left-4">
+<div class="metallic-badge px-3 py-1 rounded-full font-label-sm text-label-sm uppercase tracking-widest shadow-lg">
+                               #3
+                           </div>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-6 md:p-8 flex flex-col flex-grow justify-center md:w-2/3">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold">Mare Bianco</h3>
+<div class="flex flex-wrap items-center gap-3 font-body-base text-body-base text-on-surface-variant mt-1 text-sm">
+<span>Seafood, Italian</span>
+<span class="text-white/20">•</span>
+<span>$$$</span>
+<span class="text-white/20">•</span>
+<span>1.2 mi</span>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-container/50 px-3 py-1.5 rounded-full border border-white/5">
+<span class="material-symbols-outlined text-primary-container text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm text-on-surface">4.7</span>
+</div>
+</div>
+<!-- AI Explanation Box inside Card -->
+<div class="ai-explanation-box p-4 mt-4 inline-block w-full md:w-3/4">
+<p class="font-body-base text-body-base text-on-surface text-sm">
+                               Wildcard Pick: It's lighter fare than requested, but highly rated for ambiance and has a quiet, intimate patio available tonight.
+                           </p>
+</div>
+</div>
+</article>
+</section>
+<!-- Actions Area -->
+<section class="flex flex-col items-center justify-center mt-8 pb-8 gap-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-center">Not quite what you're craving?</p>
+<div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+<button class="btn-ghost font-title-lg text-title-lg px-8 py-4 rounded-xl text-on-surface flex items-center justify-center gap-2 w-full sm:w-auto">
+<span class="material-symbols-outlined">tune</span>
+                        Adjust Filters
+                    </button>
+<button class="btn-ai font-title-lg text-title-lg px-8 py-4 rounded-xl text-white font-bold flex items-center justify-center gap-2 w-full sm:w-auto">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">refresh</span>
+                        Generate New Ideas
+                    </button>
+</div>
+</section>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) - From JSON -->
+<nav class="fixed bottom-0 w-full rounded-t-xl z-50 border-t border-white/5 shadow-[0_-8px_32px_0_rgba(0,0,0,0.3)] bg-surface-container-lowest/70 dark:bg-surface-container-lowest/70 backdrop-blur-2xl fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 pb-safe md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 dark:text-on-surface-variant/60 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">explore</span>
+<span class="font-label-sm text-label-sm">Discover</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary-container dark:text-primary-container font-bold relative after:content-[''] after:absolute after:-bottom-1 after:w-1 after:h-1 after:bg-primary-container after:rounded-full hover:text-primary transition-colors scale-110 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-sm text-label-sm">Crave AI</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 dark:text-on-surface-variant/60 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">bookmark</span>
+<span class="font-label-sm text-label-sm">Saved</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 dark:text-on-surface-variant/60 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<!-- Simple JS to demonstrate state transition for prototype purposes -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingState = document.getElementById('loadingState');
+            const resultsState = document.getElementById('resultsState');
+            
+            // For demonstration, we'll start with results hidden if we want to show loading.
+            // Let's set a timeout to simulate the AI loading process.
+            
+            // Uncomment below to see the loading state in action
+            /*
+            resultsState.style.opacity = '0';
+            loadingState.classList.remove('hidden-state');
+            
+            setTimeout(() => {
+                loadingState.style.opacity = '0';
+                loadingState.style.transition = 'opacity 0.5s ease';
+                
+                setTimeout(() => {
+                    loadingState.classList.add('hidden-state');
+                    resultsState.style.transition = 'opacity 0.8s ease-in';
+                    resultsState.style.opacity = '1';
+                }, 500);
+            }, 3000);
+            */
+        });
+    </script>
+</body></html>
