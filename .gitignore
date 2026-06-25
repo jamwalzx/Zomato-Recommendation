@@ -22,6 +22,7 @@ build/
 # Data cache (regenerated locally; keep directory placeholder)
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/restaurants.parquet
 
 # IDE
 .vscode/
